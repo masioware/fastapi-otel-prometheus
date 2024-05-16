@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = ""
+authors = ["Marcio Martinez <marcioedumartinez@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+uvicorn = "^0.29.0"
+fastapi = "^0.111.0"
+
+[tool.poetry.group.telemetry.dependencies]
+opentelemetry-sdk = "^1.24.0"
+opentelemetry-api = "^1.24.0"
+opentelemetry-instrumentation = "^0.45b0"
+opentelemetry-instrumentation-fastapi = "^0.45b0"
+opentelemetry-instrumentation-system-metrics = "^0.45b0"
+opentelemetry-exporter-prometheus = "^0.45b0"
+prometheus-client = "^0.20.0"
+
+[tool.poetry.group.dev.dependencies]
+poethepoet = "^0.26.1"
+
+[tool.poe]
+envfile = ".env"
+
+[tool.poe.tasks]
+run = 'opentelemetry-instrument uvicorn app:create_app --factory --host 0.0.0.0 --port 8000 --reload'
+up = 'docker compose -f docker/docker-compose.yml up -d --build'
+down = 'docker compose -f docker/docker-compose.yml down'
+export = 'poetry export -f requirements.txt --with telemetry --output requirements.txt'
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
